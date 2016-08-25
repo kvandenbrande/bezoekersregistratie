@@ -1,4 +1,6 @@
-<img src="logo.png" alt="" />
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
