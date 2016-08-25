@@ -9,6 +9,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 import time,os, socket
+import configparser
 
 
 #-------------------------------------------------------------------------------------------------------------
@@ -126,18 +127,22 @@ def suggestiontodatabase(
 
 #-------------------------------------------------------------------------------------------------------------
 def main():
+	# data afkomstig van config file	
+	config = configparser.ConfigParser()
+	config.read('config')
+	hostname = config.get("DEFAULT","c_host")
+	dbbeheerder = config.get("DEFAULT","c_dbbeheerder")
 
-    dbbeheerder = 'rita.debock@voka.be'
-    # data afkomstig van input formulier
-    receiver = 'kevin.vandenbrande@voka.be'
-    contact = 'Kevin Van den Brande'
-    onderneming = 'ABC'
-    naam = 'Vermeulen'
-    voornaam = 'Joske'
-    email = 'fons@fopmail.com'
-    nieuwsbrief ='0'
-    hostname = socket.gethostname()
-    fotonaam = hostname +  "-" + time.strftime("%Y%m%d-%H%M%S.jpg")
+	# data afkomstig van input formulier
+	receiver = 'kevin.vandenbrande@voka.be'
+	contact = 'Kevin Van den Brande'
+	onderneming = 'ABC'
+	naam = 'Vermeulen'
+	voornaam = 'Joske'
+	email = 'fons@fopmail.com'
+	nieuwsbrief ='0'
+	#hostname = socket.gethostname()
+	fotonaam = hostname +  "-" + time.strftime("%Y%m%d-%H%M%S.jpg")
     
 # functie om foto te nemen
     maakfoto(fotonaam)
