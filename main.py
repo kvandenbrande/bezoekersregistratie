@@ -1,16 +1,49 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#installeer deze plugins eerst
-#sudo pip3 install pymysql
-
 from versturen import sending
-#from opslaan import todatabase
+from opslaan import ctodatabase
 from foto import maakfoto
+from ftp import ftpfoto
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
+import time,os, socket
 
+
+#-------------------------------------------------------------------------------------------------------------
+def mailtodbbeheerder(dbbeheerder,onderneming,naam,voornaam,email):
+    
+    # Create message container - the correct MIME type is multipart/alternative.
+    subject = 'Een bezoeker wenst onze nieuwsbrief te ontvangen'  
+    sender = 'Onthaal'
+      
+    msgRoot = MIMEMultipart('related')  
+    msgRoot['Subject'] = subject
+    msgRoot['From'] = sender
+
+    html = \
+            """\
+            <html>
+              <head></head>
+              <body>
+                <p>Beste,<br><br>
+                   Bezoeker met onderstaande gegevens wenst onze nieuwsbrief te ontvangen.<br><br>
+                   Onderneming: {onderneming} <br> Naam: {naam} <br>Voornaam: {voornaam} <br>Email: {email} <br><br><img src="cid:image1">
+                </p>
+               </body>
+            </html>
+            """.format(**locals())  
+
+    msgText = MIMEText(html,'html')
+
+      
+    msgRoot.attach(msgText)  
+      
+    msg = msgRoot.as_string().encode('utf-8')
+
+    # Send the message via SMTP server.
+    sending(dbbeheerder,msg)
 
 #-------------------------------------------------------------------------------------------------------------
 def mailcontact(
@@ -21,12 +54,13 @@ def mailcontact(
     naam,
     voornaam,
     email,
+    fotonaam
     ):
     
     # Create message container - the correct MIME type is multipart/alternative.
     subject = 'Uw bezoeker is toegekomen'  
     sender = 'Onthaal'
-    attachement  = 'onthaal.jpg'
+    attachement  = fotonaam
       
     msgRoot = MIMEMultipart('related')  
     msgRoot['Subject'] = subject
@@ -66,41 +100,34 @@ def mailcontact(
     
 #-------------------------------------------------------------------------------------------------------------
 def contacttodatabase(
-    receiver,
     contact,
     onderneming,
     naam,
     voornaam,
     email,
-    nieuwsbrief
+    nieuwsbrief,
+    fotonaam
     ):
 
-    # Prepare SQL query to INSERT a record into the database.
-    sql = "INSERT INTO gastenboek(Datum, Onderneming, Naam, Voornaam, Email, Contact, nieuwsbrief)\
-           VALUES (datetime.now(),onderneming, naam, voornaam, email, contact, nieuwsbrief)"
-    todatabase(sql)
-    print ('opgeslagen')
+    ctodatabase(onderneming,naam,voornaam,email,contact,nieuwsbrief,fotonaam)
 
 #-------------------------------------------------------------------------------------------------------------
 def suggestiontodatabase(
-    receiver,
     contact,
     onderneming,
     naam,
     voornaam,
     email,
-    nieuwsbrief
+    nieuwsbrief,
+    fotonaam
     ):
-    # which data is needed?
-    # Prepare SQL query to INSERT a record into the database.
-    sql = "INSERT INTO suggesties(Datum, Suggestie)\
-           VALUES (datetime.now(),suggestie)"
-    todatabase(sql)
-
+    
+    #stodatabase(sql)
 
 #-------------------------------------------------------------------------------------------------------------
 def main():
 
+    dbbeheerder = 'rita.debock@voka.be'
     # data afkomstig van input formulier
     receiver = 'kevin.vandenbrande@voka.be'
     contact = 'Kevin Van den Brande'
@@ -108,40 +135,35 @@ def main():
     naam = 'Vermeulen'
     voornaam = 'Joske'
     email = 'fons@fopmail.com'
-
-    # functie om foto te nemen
-
-#maakfoto()
-
-    # functie om bezoek weg te schrijven in database
-
-'''contacttodatabase(
-    'kevin.vandenbrande@voka.be',
-    'Kevin Van den Brande',
-    'ABC',
-    'Vermeulen',
-    'Joske',
-    'fons@fopmail.com',
-    '0',
-    )
-'''
-    # functie indien nieuwsbrief is aangevink om database beheerder te contacteren
-
-    # functie om contactpersoon te verwittigen via mail dat bezoeker is toegekomen
-
+    nieuwsbrief ='0'
+    hostname = socket.gethostname()
+    fotonaam = hostname +  "-" + time.strftime("%Y%m%d-%H%M%S.jpg")
     
-mailcontact(
-    'kevin.vandenbrande@voka.be',
-    'Kevin Van den Brande',
-    'ABC',
-    'Vermeulen',
-    'Joske',
-    'fons@fopmail.com',
-    )
-exit(0)
+# functie om foto te nemen
+    maakfoto(fotonaam)
+
+# functie om bezoek weg te schrijven in database
+    contacttodatabase(contact,onderneming,naam,voornaam,email,nieuwsbrief,fotonaam)
+
+# functie indien nieuwsbrief is aangevink om dbbeheerder en contact en anders enkel contact te verwittigen
+    if nieuwsbrief == '1':
+        mailtodbbeheerder(dbbeheerder,onderneming,naam,voornaam,email)
+        mailcontact(receiver,contact,onderneming,naam,voornaam,email,fotonaam)
+    else:
+        mailcontact(receiver,contact,onderneming,naam,voornaam,email,fotonaam)
+
+# functie om foto op te slaan op nas
+    ftpfoto(fotonaam)
+
+# verwijder genomen foto
+    os.remove(fotonaam)
+
+
+
 #-------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     main()
+    #MyApp().run()
 
 
 			
