@@ -1,27 +1,22 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #takes care of the database part
 
-import pymysql
+import pymysql.cursors
 
-
-def todatabase(sql):
+def ctodatabase(onderneming,naam,voornaam,email,contact,nieuwsbrief,fotonaam):
+    
     # Connect to the database
-    connection = pymysql.connect(host='127.0.0.1',
-                             user='root',
-                             passwd='reset',
-                             db='kvkaw')
+    connection = pymysql.connect(host='127.0.0.1',user='root',passwd='reset',db='kvkaw')
 
-try:
-    with connection.cursor() as cursor:
-        # Create a new record
-        #cursor.execute(sql)
-        cursor.execute("select Onderneming from gastenboek")
-        row = cursor.fetchall()
-        print (row [13])
-    # connection is not autocommit by default. So you must commit to save
-    # your changes.
-    #connection.commit()
-finally:
+    curr= connection.cursor()
+    # Create a new record
+    
+    sql = '''INSERT INTO gastenboek(Onderneming,Naam,Voornaam,Email,Contact,Nieuwsbrief,Foto) \
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)'''
+    curr.execute(sql, (onderneming,naam,voornaam,email,contact,nieuwsbrief,fotonaam))
+
+    # connection is not autocommit by default. So you must commit to save your changes.
+    connection.commit()
+    curr.close()
     connection.close()
-
