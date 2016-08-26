@@ -123,7 +123,7 @@ def suggestiontodatabase(
     fotonaam
     ):
     
-    #stodatabase(sql)
+    stodatabase(sql)
 
 #-------------------------------------------------------------------------------------------------------------
 def main():
@@ -144,30 +144,30 @@ def main():
 	#hostname = socket.gethostname()
 	fotonaam = hostname +  "-" + time.strftime("%Y%m%d-%H%M%S.jpg")
     
-# functie om foto te nemen
-    maakfoto(fotonaam)
+	# functie om foto te nemen
+	maakfoto(fotonaam)
+	
+	# functie om bezoek weg te schrijven in database
+	contacttodatabase(contact,onderneming,naam,voornaam,email,nieuwsbrief,fotonaam)
+	
+	# functie indien nieuwsbrief is aangevink om dbbeheerder en contact en anders enkel contact te verwittigen
+	if nieuwsbrief == '1':
+		mailtodbbeheerder(dbbeheerder,onderneming,naam,voornaam,email)
+		mailcontact(receiver,contact,onderneming,naam,voornaam,email,fotonaam)
+	else:
+		mailcontact(receiver,contact,onderneming,naam,voornaam,email,fotonaam)
 
-# functie om bezoek weg te schrijven in database
-    contacttodatabase(contact,onderneming,naam,voornaam,email,nieuwsbrief,fotonaam)
+	# functie om foto op te slaan op nas
+	ftpfoto(fotonaam)
 
-# functie indien nieuwsbrief is aangevink om dbbeheerder en contact en anders enkel contact te verwittigen
-    if nieuwsbrief == '1':
-        mailtodbbeheerder(dbbeheerder,onderneming,naam,voornaam,email)
-        mailcontact(receiver,contact,onderneming,naam,voornaam,email,fotonaam)
-    else:
-        mailcontact(receiver,contact,onderneming,naam,voornaam,email,fotonaam)
-
-# functie om foto op te slaan op nas
-    ftpfoto(fotonaam)
-
-# verwijder genomen foto
-    os.remove(fotonaam)
+	# verwijder genomen foto
+	os.remove(fotonaam)
 
 
 
 #-------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
-    main()
+	main()
     #MyApp().run()
 
 

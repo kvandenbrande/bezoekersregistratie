@@ -7,8 +7,8 @@ import configparser
 
 def ctodatabase(onderneming,naam,voornaam,email,contact,nieuwsbrief,fotonaam):
     
-   # Connect to the database
-   config = configparser.ConfigParser()
+	# Connect to the database
+	config = configparser.ConfigParser()
 	config.read('config')
 
 	connection = pymysql.connect(host=config.get("DB","c_host"),user=config.get("DB","c_user"),passwd=config.get("DB","c_passwd"),db=config.get("DB","c_db"))
