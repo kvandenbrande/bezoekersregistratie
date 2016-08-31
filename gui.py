@@ -33,7 +33,7 @@ class GUI:
 
         
         ttk.Button(self.frame_content, text = 'BEZOEK / MEETING',
-                   command = self.submit).grid(row = 4, column = 0, padx = 5, pady = 5, sticky = 'e')
+                   command = self.submit).grid(row = 4, column = 0, rowspan=2, padx = 5, pady = 5, sticky=W+E+N+S)
         ttk.Button(self.frame_content, text = 'OPLEIDING / EVENT',
                    command = self.clear).grid(row = 4, column = 1, padx = 5, pady = 5, sticky = 'w')
 

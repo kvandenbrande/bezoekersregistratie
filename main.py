@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from versturen import sending
-from opslaan import ctodatabase
 from foto import maakfoto
 from ftp import ftpfoto
 from email.mime.multipart import MIMEMultipart
@@ -10,7 +9,7 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 import time,os,socket
 import configparser
-
+import dbacties
 
 #-------------------------------------------------------------------------------------------------------------
 def mailtodbbeheerder(dbbeheerder,onderneming,naam,voornaam,email):
