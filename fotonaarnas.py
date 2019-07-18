@@ -7,7 +7,7 @@ from ftplib import FTP
 def fotoopslag(photo):
 
     ftp = FTP('192.168.0.123')
-    ftp.login(user='kevin', passwd ='AltijdEnOveral1883')
+    ftp.login(user='', passwd ='')
 
     ftp.cwd('/folder/')
 
